@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Threading;
 using System;
 using System.Text;
+using XPlaneConnector;
+using System.Collections.Generic;
 
 namespace nvan.FdsFfA320McduConnector
 {
@@ -94,7 +96,11 @@ namespace nvan.FdsFfA320McduConnector
                 mcdu2Client.Close();
             }
 
-            xPlaneConnector.Stop();
+            try
+            {
+                xPlaneConnector.Stop();
+            }
+            catch {}
         }
     }
 
@@ -119,8 +125,11 @@ namespace nvan.FdsFfA320McduConnector
 
         public void StartThread()
         {
-            Byte[] bytes;
+            Byte[] bytes, sendBytes;
             NetworkStream stream = mcduClient.GetStream();
+
+            var ledsState = new Dictionary<int, bool>();
+            bool firstIteration = false;
 
             while (true)
             {
@@ -146,6 +155,32 @@ namespace nvan.FdsFfA320McduConnector
                             }
                         }
 
+                    }
+
+                    // Done on purpose to sync LEDs at startup
+                    // TODO Clean this code
+                    if(!firstIteration)
+                    {
+                        foreach (KeyValuePair<int, DataRefElement> dataRef in dataRefManager.getLedXPlaneDataRefs(mcduNumber))
+                        {
+                            ledsState.Add(dataRef.Key, false);
+
+                            xPlaneConnector.Subscribe(dataRef.Value, 5, (dr, value) =>
+                            {
+                                var state = value != 0;
+
+                                if (ledsState[dataRef.Key] != state)
+                                {
+                                    sendBytes = Encoding.ASCII.GetBytes("B1:LED:" + dataRef.Key + ":" + (state ? "ON" : "OFF") + Environment.NewLine);
+                                    stream.Write(sendBytes, 0, sendBytes.Length);
+                                }
+
+
+                                ledsState[dataRef.Key] = state;
+                            });
+                        }
+
+                        firstIteration = true;
                     }
                 }
                 catch { }
