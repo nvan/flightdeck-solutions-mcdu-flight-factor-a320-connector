@@ -93,6 +93,8 @@ namespace nvan.FdsFfA320McduConnector
                 mcdu2Thread.Abort();
                 mcdu2Client.Close();
             }
+
+            xPlaneConnector.Stop();
         }
     }
 
