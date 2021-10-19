@@ -111,6 +111,7 @@ namespace nvan.FdsFfA320McduConnector
             [8] = "RDY",
             [2] = "FAIL",
             [4] = "FMGC",
+            [3] = "MENU", // Duplicated entry on purspose, as MCDU has two sepparated bulbs for MCDU MENU
             [5] = "MENU",
             [6] = "SYS1",
             [10] = "SYS2",
