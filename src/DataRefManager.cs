@@ -5,8 +5,8 @@ namespace nvan.FdsFfA320McduConnector
 {
     public class DataRefManager
     {
-        private Dictionary<int, XPlaneCommand>[] xPlaneCommands =
-            new Dictionary<int, XPlaneCommand>[2];
+        private Dictionary<int, DataRefElement>[] xPlaneDataRefs =
+            new Dictionary<int, DataRefElement>[2];
 
         private Dictionary<int, string> dataRefs = new Dictionary<int, string>()
         {
@@ -86,21 +86,22 @@ namespace nvan.FdsFfA320McduConnector
             [74] = "DOWN"
         };
 
-        public ref Dictionary<int, XPlaneCommand> getXPlaneCommands(int mcduNumber)
+        public ref Dictionary<int, DataRefElement> getXPlaneDataRefs(int mcduNumber)
         {
-            if (xPlaneCommands[mcduNumber - 1] == null)
+            if (xPlaneDataRefs[mcduNumber - 1] == null)
             {
-                xPlaneCommands[mcduNumber - 1] = new Dictionary<int, XPlaneCommand>();
+                xPlaneDataRefs[mcduNumber - 1] = new Dictionary<int, DataRefElement>();
                 foreach (KeyValuePair<int, string> dataRef in dataRefs)
                 {
-                    xPlaneCommands[mcduNumber - 1].Add(dataRef.Key, new XPlaneCommand(
-                        "NVAN MCDU FDS Connector/MCDU " + mcduNumber + "/" + dataRef.Value,
-                        ""
-                    ));
+                    xPlaneDataRefs[mcduNumber - 1].Add(dataRef.Key, new DataRefElement()
+                        {
+                            DataRef = "NVAN MCDU FDS Connector/MCDU " + mcduNumber + "/" + dataRef.Value
+                        }
+                    );
                 }
             }
 
-            return ref xPlaneCommands[mcduNumber - 1];
+            return ref xPlaneDataRefs[mcduNumber - 1];
         }
 
         private Dictionary<int, DataRefElement>[] ledXPlaneDataRefs =

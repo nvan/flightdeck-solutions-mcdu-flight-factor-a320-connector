@@ -146,11 +146,11 @@ namespace nvan.FdsFfA320McduConnector
                             in msg.Split(new[] { Environment.NewLine }, StringSplitOptions.None)
                         )
                         {
-                            if (op.Contains("SW:") && op.Contains(":ON"))
+                            if (op.Contains("SW:") && op.Contains(":ON") || op.Contains(":OFF"))
                             {
                                 int code = int.Parse(op.Split(':')[1]);
-                                xPlaneConnector.SendCommand(
-                                    dataRefManager.getXPlaneCommands(mcduNumber)[code]
+                                xPlaneConnector.SetDataRefValue(
+                                    dataRefManager.getXPlaneDataRefs(mcduNumber)[code],  op.Contains(":ON") ? 1 : 0
                                 );
                             }
                         }
